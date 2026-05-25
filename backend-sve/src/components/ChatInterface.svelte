@@ -16,6 +16,7 @@
         message: string;
         userName: string;
         roomID: string;
+        isMine?: boolean;
     }
     let userName = $state("");
     let messages = $state<message[]>([]);
@@ -64,7 +65,13 @@
         };
 
         const handleMessage = (data: message) => {
-            messages.push(data);
+            messages = [
+                ...messages,
+                {
+                    ...data,
+                    isMine: data.userName === userName,
+                },
+            ];
         };
 
         socket.on("room-found", handleRoomFound);
@@ -87,67 +94,74 @@
     });
 </script>
 
-<div class="grid gap-2 w-auto m-2">
-    <input
-        disabled={isJoinedtoRoom || isWaiting}
-        class="bg-gray-400 p-1 disabled:bg-gray-300"
-        bind:value={userName}
-        onkeydown={(e) => e.key === "Enter" && joinRoom()}
-    />
-    <button
-        disabled={isWaiting || isJoinedtoRoom}
-        class="bg-blue-500 rounded-sm p-2 hover:bg-blue-400 text-white disabled:bg-blue-200"
-        onclick={joinRoom}
+<div
+    class="flex flex-col h-full max-w-xl mx-auto p-4 gap-4 bg-zinc-950 text-white rounded-xl"
+>
+    <div
+        class="flex flex-col gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 shadow-md"
     >
-        {#if isWaiting}
-            Searching...
-        {:else if isJoinedtoRoom}
-            Connected
-        {:else}
-            Find Room
-        {/if}
-    </button>
+        <input
+            disabled={isJoinedtoRoom || isWaiting}
+            class="px-3 py-2 rounded-lg bg-zinc-800 text-sm outline-none border border-zinc-700 focus:border-emerald-500 disabled:opacity-50"
+            placeholder="Enter username..."
+            bind:value={userName}
+            onkeydown={(e) => e.key === "Enter" && joinRoom()}
+        />
 
-    <input
-        disabled={!isJoinedtoRoom}
-        class="bg-red-400 p-1 disabled:bg-gray-300"
-        bind:value={text}
-        onkeydown={(e) => e.key === "Enter" && sendMessage()}
-    />
+        <button
+            disabled={isWaiting || isJoinedtoRoom}
+            class="px-3 py-2 rounded-lg text-sm font-medium transition
+            bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+            onclick={joinRoom}
+        >
+            {#if isWaiting}
+                Searching for room...
+            {:else if isJoinedtoRoom}
+                Connected
+            {:else}
+                Find Room
+            {/if}
+        </button>
+    </div>
 
-    <button
-        disabled={!isJoinedtoRoom}
-        class="bg-blue-500 rounded-sm p-2 hover:bg-blue-400 text-white disabled:bg-blue-200"
-        onclick={sendMessage}
-    >
-        Send
-    </button>
-
-    {#if isJoinedtoRoom}
-        <div class="text-green-500">
-            Joined room: {roomId}
-        </div>
-    {/if}
-
-    <UseToast {status} />
-
-    <div class="flex flex-col gap-3 p-4">
+    <div class="flex-1 overflow-y-auto flex flex-col gap-2 p-2">
         {#each messages as msg}
-            <div
-                class="max-w-[75%] rounded-2xl border border-zinc-700/50 bg-zinc-900/80 backdrop-blur-md shadow-lg px-4 py-3 transition-all hover:scale-[1.01] hover:border-zinc-600"
-            >
+            <div class="flex {msg.isMine ? 'justify-end' : 'justify-start'}">
                 <div
-                    class="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2"
+                    class={`max-w-[75%] px-3 py-2 rounded-2xl shadow-md border text-sm wrap-break-word
+                    ${
+                        msg.isMine
+                            ? "bg-emerald-600 border-emerald-500 text-white"
+                            : "bg-zinc-900 border-zinc-800 text-zinc-200"
+                    }`}
                 >
-                    {msg.userName}
-                </div>
-
-                <div
-                    class="text-sm leading-relaxed text-zinc-200 wrap-break-word"
-                >
+                    <div class="text-[10px] opacity-70 mb-1">
+                        {msg.userName}
+                    </div>
                     {msg.message}
                 </div>
             </div>
         {/each}
     </div>
+
+    <div class="flex gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded-xl">
+        <input
+            disabled={!isJoinedtoRoom}
+            class="flex-1 px-3 py-2 bg-zinc-800 text-sm rounded-lg outline-none border border-zinc-700 focus:border-blue-500 disabled:opacity-50"
+            placeholder="Type a message..."
+            bind:value={text}
+            onkeydown={(e) => e.key === "Enter" && sendMessage()}
+        />
+
+        <button
+            disabled={!isJoinedtoRoom}
+            class="px-4 py-2 rounded-lg text-sm font-medium transition
+            bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+            onclick={sendMessage}
+        >
+            Send
+        </button>
+    </div>
+
+    <UseToast {status} />
 </div>
