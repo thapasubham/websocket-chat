@@ -30,4 +30,4 @@ class RedisClient {
   }
 }
 
-export const redisClient = new RedisClient();
+export const redisIntance = new RedisClient();

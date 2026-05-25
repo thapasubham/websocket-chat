@@ -1,27 +1,24 @@
 <script lang="ts">
     import { io, Socket } from "socket.io-client";
     import { onMount } from "svelte";
-    import Toast from "./lib/Toast.svelte";
     import UseToast from "./lib/UseToast.svelte";
     import ChatInterface from "./components/ChatInterface.svelte";
-    let socket: Socket;
+    let socket: Socket = $state<Socket>();
     let status = $state("");
     let isConnected = $state(false);
-    let text = $state("");
     function Connect() {
         socket = io("ws://localhost:5000");
 
         socket.on("connect", () => {
             isConnected = true;
             status = "Connected Successfully";
-            console.log("Connected:", socket.id);
+            console.log("Connected to websocket:");
         });
 
-        socket.on("message", (data) => {
+        socket.on("disconnect", (data) => {
             status = "Failed to connect";
 
             isConnected = false;
-            console.log("Received:", data);
         });
     }
     onMount(() => {});

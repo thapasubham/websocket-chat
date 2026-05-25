@@ -1,19 +1,14 @@
 import express from "express";
 import { createServer } from "http";
-import { WebSocketController } from "./websocket/websocket.js";
+import { WebSocketController } from "./realtime/websocket.js";
 import { Server } from "socket.io";
 import cors from "cors";
-import { redisClient } from "./client/redisClient.js";
+import { redisIntance } from "./service/redis.service.js";
+import { createAdapter } from "@socket.io/redis-streams-adapter";
 
 function startServer() {
   const app = express();
-  redisClient
-    .healthCheck()
-    .then(() => console.log("Connected to redis"))
-    .catch(() => {
-      console.log("Failed to connect to redis");
-      process.exit(1);
-    });
+  const redisClient = redisIntance.getClient();
   app.use(
     cors({
       origin: "*",
@@ -21,6 +16,7 @@ function startServer() {
   );
   const server = createServer(app);
   const io = new Server(server, {
+    adapter: createAdapter(redisClient),
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
