@@ -12,8 +12,13 @@
     let isWaiting = $state(false);
 
     let status = $state("");
-
-    let messages = $state<string[]>([]);
+    interface message {
+        message: string;
+        userName: string;
+        roomID: string;
+    }
+    let userName = $state("");
+    let messages = $state<message[]>([]);
     interface room_found {
         roomID: string;
         players: string[];
@@ -25,6 +30,7 @@
 
         socket.emit("message", {
             message: text,
+            userName: userName,
             roomID: roomId,
         });
 
@@ -57,8 +63,8 @@
             status = data;
         };
 
-        const handleMessage = (data: { message: string }) => {
-            messages.push(data.message);
+        const handleMessage = (data: message) => {
+            messages.push(data);
         };
 
         socket.on("room-found", handleRoomFound);
@@ -81,7 +87,13 @@
     });
 </script>
 
-<div class="grid gap-2 w-auto">
+<div class="grid gap-2 w-auto m-2">
+    <input
+        disabled={isJoinedtoRoom || isWaiting}
+        class="bg-gray-400 p-1 disabled:bg-gray-300"
+        bind:value={userName}
+        onkeydown={(e) => e.key === "Enter" && joinRoom()}
+    />
     <button
         disabled={isWaiting || isJoinedtoRoom}
         class="bg-blue-500 rounded-sm p-2 hover:bg-blue-400 text-white disabled:bg-blue-200"
@@ -119,10 +131,22 @@
 
     <UseToast {status} />
 
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-3 p-4">
         {#each messages as msg}
-            <div class="bg-zinc-800 text-white p-2 rounded">
-                {msg}
+            <div
+                class="max-w-[75%] rounded-2xl border border-zinc-700/50 bg-zinc-900/80 backdrop-blur-md shadow-lg px-4 py-3 transition-all hover:scale-[1.01] hover:border-zinc-600"
+            >
+                <div
+                    class="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2"
+                >
+                    {msg.userName}
+                </div>
+
+                <div
+                    class="text-sm leading-relaxed text-zinc-200 wrap-break-word"
+                >
+                    {msg.message}
+                </div>
             </div>
         {/each}
     </div>

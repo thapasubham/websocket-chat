@@ -25,16 +25,15 @@
 </script>
 
 <div class="flex">
-    <div class="grid justify-center gap-3">
+    <div class="flex justify-center items-center gap-3">
         {#if status}
             <UseToast {status} />
         {/if}
-        <div class="text-gray-700 text-2xl">hello</div>
 
         <button
             onclick={Connect}
             disabled={isConnected}
-            class="bg-blue-500 rounded-sm p-2 hover:bg-blue-400 text-white disabled:bg-blue-200"
+            class="bg-blue-500 m-2 rounded-sm p-2 hover:bg-blue-400 text-white disabled:bg-blue-200"
         >
             Connect
         </button>

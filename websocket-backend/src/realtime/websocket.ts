@@ -5,6 +5,7 @@ import { keyName } from "./redis.key.js";
 
 interface Message {
   message: string;
+  userName: string;
   roomID: string;
 }
 
