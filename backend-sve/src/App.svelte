@@ -1,37 +1,49 @@
 <script lang="ts">
     import { io, Socket } from "socket.io-client";
-    import { onMount } from "svelte";
     import UseToast from "./lib/UseToast.svelte";
     import ChatInterface from "./components/ChatInterface.svelte";
-    let socket: Socket = $state<Socket>();
+
+    let socket: Socket;
     let status = $state("");
     let isConnected = $state(false);
 
     function disconnect() {
         if (!socket) return;
 
+        status = "Disconnected Successfully";
+
         socket.disconnect();
         socket.removeAllListeners();
 
         isConnected = false;
-        status = "Disconnected Successfully";
     }
+
     function Connect() {
         socket = io("ws://localhost:5000");
 
         socket.on("connect", () => {
             isConnected = true;
             status = "Connected Successfully";
-            console.log("Connected to websocket:");
+
+            console.log("Connected to websocket");
         });
 
-        socket.on("disconnect", (data) => {
-            status = "Failed to connect";
-
+        socket.on("disconnect", () => {
             isConnected = false;
+
+            // prevent overwriting manual disconnect message
+            if (status !== "Disconnected Successfully") {
+                status = "Connection lost";
+            }
+
+            console.log("Disconnected from websocket");
+        });
+
+        socket.on("connect_error", (err) => {
+            status = "Connection failed";
+            console.error(err);
         });
     }
-    onMount(() => {});
 </script>
 
 <div class="min-h-screen flex flex-col bg-zinc-950 text-white">
@@ -40,20 +52,23 @@
     >
         <div class="flex items-center gap-3">
             <button
-                onclick={Connect}
+                data-testid="connect-btn"
+                on:click={Connect}
                 disabled={isConnected}
                 class="px-4 py-2 rounded-lg text-sm font-medium transition
                 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:text-zinc-400"
             >
                 {isConnected ? "Connected" : "Connect"}
             </button>
+
             <button
-                onclick={disconnect}
+                data-testid="disconnect-btn"
+                on:click={disconnect}
                 disabled={!isConnected}
                 class="px-4 py-2 rounded-lg text-sm font-medium transition
-                    bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+                bg-red-600 hover:bg-red-500 disabled:bg-zinc-700 disabled:text-zinc-400"
             >
-                {isConnected ? "Disonnect" : "Disconnected"}
+                {isConnected ? "Disconnect" : "Disconnected"}
             </button>
         </div>
 
@@ -64,7 +79,7 @@
 
     <div class="flex-1 flex">
         {#if isConnected}
-            <div class="flex-1">
+            <div data-testid="chat-interface" class="flex-1">
                 <ChatInterface {socket} />
             </div>
         {:else}
