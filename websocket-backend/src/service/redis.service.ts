@@ -3,10 +3,7 @@ import { Redis } from "ioredis";
 class RedisClient {
   private client: Redis;
   constructor() {
-    this.client = new Redis({
-      host: "localhost",
-      port: 6379,
-    });
+    this.client = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 
     this.client.on("error", (err) => {
       console.error("Redis Client Error:", err);
