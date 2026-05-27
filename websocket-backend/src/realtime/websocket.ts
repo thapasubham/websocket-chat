@@ -26,14 +26,14 @@ export class WebSocketController {
         this.addtoQueue(socket);
       });
 
-      socket.on("disconnect", () => {
-        console.log("user disconnected:", socket.id);
+      socket.on("disconnect", async () => {
+        await this.redisClient.lrem(keyName.matchmaking, 0, socket.id);
       });
     });
   }
 
   async addtoQueue(socket: Socket) {
-    const MAX_USERS = 2;
+    const MAX_USERS = 10;
 
     const exists = await this.redisClient.lpos(keyName.matchmaking, socket.id);
 
@@ -45,6 +45,7 @@ export class WebSocketController {
     const queueSize = await this.redisClient.llen(keyName.matchmaking);
 
     if (queueSize < MAX_USERS) {
+      console.log("User left to connect", MAX_USERS - queueSize);
       socket.emit(
         "queue-status",
         `Waiting for player... ${queueSize} in queue`,

@@ -95,7 +95,7 @@
 </script>
 
 <div
-    class="flex flex-col h-full max-w-xl mx-auto p-4 gap-4 bg-zinc-950 text-white rounded-xl"
+    class="flex flex-col h-full w-full max-w-4xl mx-auto p-4 gap-4 bg-zinc-950 text-white rounded-xl"
 >
     <div
         class="flex flex-col gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 shadow-md"
@@ -124,11 +124,18 @@
         </button>
     </div>
 
-    <div class="flex-1 overflow-y-auto flex flex-col gap-2 p-2">
+    <div
+        class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2 p-2
+                [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:bg-zinc-950
+                [&::-webkit-scrollbar-thumb]:bg-zinc-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                hover:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+    >
         {#each messages as msg}
             <div class="flex {msg.isMine ? 'justify-end' : 'justify-start'}">
                 <div
-                    class={`max-w-[75%] px-3 py-2 rounded-2xl shadow-md border text-sm wrap-break-word
+                    class={`max-w-[75%] px-3 py-2 rounded-2xl shadow-md border text-sm break-words
                     ${
                         msg.isMine
                             ? "bg-emerald-600 border-emerald-500 text-white"

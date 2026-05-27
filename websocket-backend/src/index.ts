@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Response, type Request } from "express";
 import { createServer } from "http";
 import { WebSocketController } from "./realtime/websocket.js";
 import { Server } from "socket.io";
@@ -9,6 +9,9 @@ import { createAdapter } from "@socket.io/redis-streams-adapter";
 function startServer() {
   const app = express();
   const redisClient = redisIntance.getClient();
+  app.get("/", (req: Request, res: Response) => {
+    res.status(200).send("Server is working");
+  });
   app.use(
     cors({
       origin: "*",

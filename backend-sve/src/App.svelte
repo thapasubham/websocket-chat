@@ -46,14 +46,16 @@
     }
 </script>
 
-<div class="min-h-screen flex flex-col bg-zinc-950 text-white">
+<div
+    class="h-screen w-screen flex flex-col bg-zinc-950 text-white overflow-hidden"
+>
     <div
-        class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900"
+        class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900 flex-shrink-0"
     >
         <div class="flex items-center gap-3">
             <button
                 data-testid="connect-btn"
-                on:click={Connect}
+                onclick={Connect}
                 disabled={isConnected}
                 class="px-4 py-2 rounded-lg text-sm font-medium transition
                 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:text-zinc-400"
@@ -63,7 +65,7 @@
 
             <button
                 data-testid="disconnect-btn"
-                on:click={disconnect}
+                onclick={disconnect}
                 disabled={!isConnected}
                 class="px-4 py-2 rounded-lg text-sm font-medium transition
                 bg-red-600 hover:bg-red-500 disabled:bg-zinc-700 disabled:text-zinc-400"
@@ -77,9 +79,12 @@
         {/if}
     </div>
 
-    <div class="flex-1 flex">
+    <div class="flex-1 min-h-0 flex overflow-hidden">
         {#if isConnected}
-            <div data-testid="chat-interface" class="flex-1">
+            <div
+                data-testid="chat-interface"
+                class="flex-1 flex flex-col min-h-0 overflow-hidden"
+            >
                 <ChatInterface {socket} />
             </div>
         {:else}

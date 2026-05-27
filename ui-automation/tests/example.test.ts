@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5174");
+  await page.goto("http://localhost:5173");
 });
 
 test("has title", async ({ page }) => {
@@ -10,7 +10,9 @@ test("has title", async ({ page }) => {
 
 test("connects to websocket", async ({ page }) => {
   await page.getByTestId("connect-btn").click();
+  await page.waitForTimeout(500);
 
+  await page.screenshot({ path: "screenshot.png" });
   await expect(page.getByText("Connected Successfully")).toBeVisible();
 
   await expect(page.getByTestId("chat-interface")).toBeVisible();
