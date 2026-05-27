@@ -33,7 +33,7 @@ export class WebSocketController {
   }
 
   async addtoQueue(socket: Socket) {
-    const MAX_USERS = 10;
+    const MAX_USERS = 5;
 
     const exists = await this.redisClient.lpos(keyName.matchmaking, socket.id);
 

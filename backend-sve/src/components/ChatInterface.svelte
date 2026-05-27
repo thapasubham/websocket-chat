@@ -97,31 +97,33 @@
 <div
     class="flex flex-col h-full w-full max-w-4xl mx-auto p-4 gap-4 bg-zinc-950 text-white rounded-xl"
 >
-    <div
-        class="flex flex-col gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 shadow-md"
-    >
-        <input
-            disabled={isJoinedtoRoom || isWaiting}
-            class="px-3 py-2 rounded-lg bg-zinc-800 text-sm outline-none border border-zinc-700 focus:border-emerald-500 disabled:opacity-50"
-            placeholder="Enter username..."
-            bind:value={userName}
-            onkeydown={(e) => e.key === "Enter" && joinRoom()}
-        />
-
-        <button
-            disabled={isWaiting || isJoinedtoRoom}
-            class="px-3 py-2 rounded-lg text-sm font-medium transition
-            bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-400"
-            onclick={joinRoom}
+    <div class="flex justify-center shrink-0">
+        <div
+            class="flex flex-col gap-2 p-3 w-1/2 rounded-xl bg-zinc-900 border border-zinc-800 shadow-md"
         >
-            {#if isWaiting}
-                Searching for room...
-            {:else if isJoinedtoRoom}
-                Connected
-            {:else}
-                Find Room
-            {/if}
-        </button>
+            <input
+                disabled={isJoinedtoRoom || isWaiting}
+                class="px-3 py-2 rounded-lg bg-zinc-800 text-sm outline-none border border-zinc-700 focus:border-emerald-500 disabled:opacity-50"
+                placeholder="Enter username..."
+                bind:value={userName}
+                onkeydown={(e) => e.key === "Enter" && joinRoom()}
+            />
+
+            <button
+                disabled={isWaiting || isJoinedtoRoom}
+                class="px-3 py-2 rounded-lg text-sm font-medium transition
+            bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+                onclick={joinRoom}
+            >
+                {#if isWaiting}
+                    Searching for room...
+                {:else if isJoinedtoRoom}
+                    Connected
+                {:else}
+                    Find Room
+                {/if}
+            </button>
+        </div>
     </div>
 
     <div
@@ -151,10 +153,12 @@
         {/each}
     </div>
 
-    <div class="flex gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded-xl">
+    <div
+        class="flex gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded-xl flex-shrink-0"
+    >
         <input
             disabled={!isJoinedtoRoom}
-            class="flex-1 px-3 py-2 bg-zinc-800 text-sm rounded-lg outline-none border border-zinc-700 focus:border-blue-500 disabled:opacity-50"
+            class="flex-1 px-3 w-full py-2 bg-zinc-800 text-sm rounded-lg outline-none border border-zinc-700 focus:border-blue-500 disabled:opacity-50"
             placeholder="Type a message..."
             bind:value={text}
             onkeydown={(e) => e.key === "Enter" && sendMessage()}
