@@ -2,6 +2,8 @@
     import { io, Socket } from "socket.io-client";
     import UseToast from "./lib/UseToast.svelte";
     import ChatInterface from "./components/ChatInterface.svelte";
+    import CanvasInterface from "./components/CanvasInterface.svelte";
+    import { onMount } from "svelte";
 
     let socket: Socket;
     let status = $state("");
@@ -19,7 +21,9 @@
     }
 
     function Connect() {
-        socket = io("ws://localhost:5000");
+        const targetIP = window.location.hostname;
+
+        socket = io(`ws://${targetIP}:5000`);
 
         socket.on("connect", () => {
             isConnected = true;
@@ -31,7 +35,6 @@
         socket.on("disconnect", () => {
             isConnected = false;
 
-            // prevent overwriting manual disconnect message
             if (status !== "Disconnected Successfully") {
                 status = "Connection lost";
             }
@@ -44,13 +47,16 @@
             console.error(err);
         });
     }
+    onMount(() => {
+        Connect();
+    });
 </script>
 
 <div
     class="h-screen w-screen flex flex-col bg-zinc-950 text-white overflow-hidden"
 >
     <div
-        class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900 flex-shrink-0"
+        class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900 shrink-0"
     >
         <div class="flex items-center gap-3">
             <button
@@ -85,11 +91,11 @@
                 data-testid="chat-interface"
                 class="flex-1 flex flex-col min-h-0 overflow-hidden"
             >
-                <ChatInterface {socket} />
+                <CanvasInterface {socket} />
             </div>
         {:else}
             <div class="flex-1 flex items-center justify-center text-zinc-500">
-                Click connect to start chatting
+                Click connect to start
             </div>
         {/if}
     </div>
